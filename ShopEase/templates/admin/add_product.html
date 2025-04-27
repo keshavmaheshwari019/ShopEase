@@ -1,0 +1,337 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ShopEase - Add Product</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .admin-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        @media (min-width: 768px) {
+            .admin-container {
+                flex-direction: row;
+            }
+        }
+        .admin-sidebar {
+            background-color: #1f2937; /* Tailwind slate-800 */
+            color: white;
+            padding: 1.5rem 1rem;
+            flex-shrink: 0;
+        }
+        @media (min-width: 768px) {
+            .admin-sidebar {
+                width: 250px;
+                height: 100vh;
+                position: sticky;
+                top: 0;
+            }
+        }
+        .admin-sidebar h2 {
+            font-weight: 700;
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        .admin-nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .admin-nav li {
+            margin-bottom: 0.75rem;
+        }
+        .admin-nav a {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: #d1d5db; /* Tailwind gray-300 */
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            transition: background-color 0.2s, color 0.2s;
+        }
+        .admin-nav a:hover {
+            background-color: #374151; /* Tailwind slate-700 */
+            color: white;
+        }
+        .admin-nav li.active a {
+            background-color: #2563eb; /* Tailwind blue-600 */
+            color: white;
+        }
+        .admin-content {
+            flex-grow: 1;
+            padding: 1.5rem 1rem;
+            max-width: 100%;
+        }
+        @media (min-width: 768px) {
+            .admin-content {
+                padding: 2rem 3rem;
+            }
+        }
+        .admin-header {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        .admin-header h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #111827; /* Tailwind gray-900 */
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            border: none;
+            padding: 0.5rem 1rem;
+            text-decoration: none;
+            user-select: none;
+        }
+        .btn-primary {
+            background-color: #2563eb; /* blue-600 */
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: #1d4ed8; /* blue-700 */
+        }
+        .btn-secondary {
+            background-color: #e5e7eb; /* gray-200 */
+            color: #374151; /* gray-700 */
+        }
+        .btn-secondary:hover {
+            background-color: #d1d5db; /* gray-300 */
+        }
+        .product-form-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        form.product-form {
+            width: 100%;
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+        @media (min-width: 640px) {
+            .form-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+        label {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #374151; /* gray-700 */
+        }
+        input[type="text"],
+        input[type="number"],
+        input[type="url"],
+        select,
+        textarea {
+            border: 1px solid #d1d5db; /* gray-300 */
+            border-radius: 0.375rem;
+            padding: 0.5rem 0.75rem;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+            color: #111827; /* gray-900 */
+        }
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        input[type="url"]:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #2563eb; /* blue-600 */
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.3);
+        }
+        textarea {
+            resize: vertical;
+        }
+        .image-upload-container {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 1rem;
+        }
+        .image-upload-container input[type="url"] {
+            flex-grow: 1;
+            min-width: 0;
+        }
+        .or-divider {
+            font-weight: 600;
+            color: #6b7280; /* gray-500 */
+            user-select: none;
+        }
+        .file-upload {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .file-upload input[type="file"] {
+            position: absolute;
+            opacity: 0;
+            width: 1px;
+            height: 1px;
+            overflow: hidden;
+            z-index: -1;
+        }
+        .image-preview {
+            margin-top: 0.75rem;
+            min-height: 50px;
+        }
+        .form-actions {
+            margin-top: 2rem;
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        @media (max-width: 480px) {
+            .form-actions {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <section class="admin-container">
+        <aside class="admin-sidebar" aria-label="Admin Sidebar Navigation">
+            <h2>Admin Panel</h2>
+            <nav class="admin-nav" aria-label="Admin Navigation">
+                <ul>
+                    <li><a href="{{ url_for('admin_dashboard') }}"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                    <li class="active"><a href="{{ url_for('admin_products') }}"><i class="fas fa-box"></i> Products</a></li>
+                    <li><a href="{{ url_for('admin_orders') }}"><i class="fas fa-shopping-cart"></i> Orders</a></li>
+                    <li><a href="{{ url_for('admin_users') }}"><i class="fas fa-users"></i> Users</a></li>
+                </ul>
+            </nav>
+        </aside>
+        
+        <main class="admin-content">
+            <header class="admin-header">
+                <h1>Add New Product</h1>
+                <a href="{{ url_for('admin_products') }}" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Back to Products</a>
+            </header>
+            
+            <div class="product-form-container">
+                <form action="{{ url_for('admin_add_product') }}" method="POST" enctype="multipart/form-data" class="product-form" novalidate>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="name">Product Name</label>
+                            <input type="text" id="name" name="name" required autocomplete="off" />
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="price">Price ($)</label>
+                            <input type="number" id="price" name="price" step="0.01" min="0" required autocomplete="off" />
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="category">Category</label>
+                            <select id="category" name="category" required>
+                                <option value="" disabled selected>Select Category</option>
+                                <option value="Electronics">Electronics</option>
+                                <option value="Clothing">Clothing</option>
+                                <option value="Home">Home</option>
+                                <option value="Books">Books</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="stock">Stock</label>
+                            <input type="number" id="stock" name="stock" min="0" required autocomplete="off" />
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="brand">Brand</label>
+                            <input type="text" id="brand" name="brand" autocomplete="off" />
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="discount">Discount (%)</label>
+                            <input type="number" id="discount" name="discount" step="0.1" min="0" max="100" value="0" autocomplete="off" />
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="rating">Rating</label>
+                            <input type="number" id="rating" name="rating" step="0.1" min="0" max="5" value="0" autocomplete="off" />
+                        </div>
+                        
+                        <div class="form-group full-width">
+                            <label for="image_url">Image URL</label>
+                            <div class="image-upload-container">
+                                <input type="url" id="image_url" name="image_url" placeholder="Enter image URL" autocomplete="off" />
+                                <div class="or-divider">OR</div>
+                                <div class="file-upload">
+                                    <input type="file" id="product_image" name="product_image" accept="image/*" />
+                                    <button type="button" class="btn btn-secondary" id="upload-btn" aria-label="Upload Image"><i class="fas fa-upload"></i> Upload Image</button>
+                                </div>
+                            </div>
+                            <div class="image-preview" id="image-preview" aria-live="polite" aria-atomic="true"></div>
+                        </div>
+                        
+                        <div class="form-group full-width">
+                            <label for="description">Description</label>
+                            <textarea id="description" name="description" rows="5" required autocomplete="off"></textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="reset" class="btn btn-secondary"><i class="fas fa-undo"></i> Reset</button>
+                        <button type="submit" class="btn btn-primary"><i class="fas fa-plus"></i> Add Product</button>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </section>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const uploadBtn = document.getElementById('upload-btn');
+            const fileInput = document.getElementById('product_image');
+            const imagePreview = document.getElementById('image-preview');
+            const imageUrlInput = document.getElementById('image_url');
+            
+            uploadBtn.addEventListener('click', function() {
+                fileInput.click();
+            });
+            
+            fileInput.addEventListener('change', function() {
+                if (this.files && this.files[0]) {
+                    const reader = new FileReader();
+                    
+                    reader.onload = function(e) {
+                        imagePreview.innerHTML = `
+                            <img src="${e.target.result}" alt="Preview of the uploaded product image showing a sample product with clear details" class="max-w-xs max-h-52 rounded-md shadow-md" />
+                        `;
+                        imageUrlInput.value = 'Image uploaded';
+                    }
+                    
+                    reader.readAsDataURL(this.files[0]);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

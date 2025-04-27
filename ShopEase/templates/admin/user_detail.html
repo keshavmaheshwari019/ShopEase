@@ -1,0 +1,86 @@
+{% extends 'admin/base.html' %}
+
+{% block title %}ShopEase - User Details{% endblock %}
+
+{% block content %}
+<div class="admin-content">
+    <div class="admin-header">
+        <h1>User Details</h1>
+        <a href="{{ url_for('admin_users') }}" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Back to Users</a>
+    </div>
+    
+    <div class="user-detail-grid">
+        <div class="user-info-card">
+            <h2>User Information</h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <span class="info-label">ID:</span>
+                    <span>{{ user.id }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Name:</span>
+                    <span>{{ user.name }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Email:</span>
+                    <span>{{ user.email }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Role:</span>
+                    <span>{{ 'Admin' if user.is_admin else 'User' }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Joined:</span>
+                    <span>{{ user.created_at.strftime('%B %d, %Y') }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Total Orders:</span>
+                    <span>{{ orders|length }}</span>
+                </div>
+            </div>
+            <div class="user-actions">
+                <a href="{{ url_for('admin_toggle_user', user_id=user.id) }}" class="btn btn-warning">
+                    <i class="fas fa-toggle-on"></i> Toggle Status
+                </a>
+            </div>
+        </div>
+        
+        <div class="user-orders-card">
+            <h2>User Orders</h2>
+            {% if orders %}
+                <div class="table-responsive">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Date</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for order in orders %}
+                                <tr>
+                                    <td>#{{ order.id }}</td>
+                                    <td>{{ order.created_at.strftime('%B %d, %Y') }}</td>
+                                    <td>${{ "%.2f"|format(order.total_amount) }}</td>
+                                    <td><span class="status-badge {{ order.order_status.lower() }}">{{ order.order_status }}</span></td>
+                                    <td>
+                                        <a href="{{ url_for('admin_order_detail', order_id=order.id) }}" class="btn btn-sm btn-primary">View</a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-shopping-cart fa-3x"></i>
+                    <p>This user has not placed any orders yet.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

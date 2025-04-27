@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+
+{% block title %}ShopEase - Your Cart{% endblock %}
+
+{% block content %}
+<section class="cart-container">
+    <h1>Your Shopping Cart</h1>
+    
+    {% if cart_items %}
+        <div class="cart-items">
+            <div class="cart-header">
+                <div class="cart-header-product">Product</div>
+                <div class="cart-header-price">Price</div>
+                <div class="cart-header-quantity">Quantity</div>
+                <div class="cart-header-total">Total</div>
+                <div class="cart-header-actions">Actions</div>
+            </div>
+            
+            {% for item in cart_items %}
+                <div class="cart-item">
+                    <div class="cart-item-product">
+                        <img src="{{ item.product.image_url }}" alt="{{ item.product.name }}">
+                        <div class="cart-item-details">
+                            <h3>{{ item.product.name }}</h3>
+                            <p class="cart-item-category">{{ item.product.category }}</p>
+                        </div>
+                    </div>
+                    <div class="cart-item-price">${{ "%.2f"|format(item.product.price) }}</div>
+                    <div class="cart-item-quantity">
+                        <form action="{{ url_for('update_cart') }}" method="POST" class="quantity-form">
+                            <input type="hidden" name="product_id" value="{{ item.product.id }}">
+                            <div class="quantity-controls">
+                                <button type="button" class="quantity-btn minus">-</button>
+                                <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="{{ item.product.stock }}">
+                                <button type="button" class="quantity-btn plus">+</button>
+                            </div>
+                            <button type="submit" class="btn btn-sm">Update</button>
+                        </form>
+                    </div>
+                    <div class="cart-item-total">${{ "%.2f"|format(item.item_total) }}</div>
+                    <div class="cart-item-actions">
+                        <a href="{{ url_for('remove_from_cart', product_id=item.product.id) }}" class="btn btn-danger btn-sm">
+                            <i class="fas fa-trash"></i> Remove
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        
+        <div class="cart-summary">
+            <div class="cart-summary-row">
+                <span>Subtotal:</span>
+                <span>${{ "%.2f"|format(total) }}</span>
+            </div>
+            <div class="cart-summary-row">
+                <span>Shipping:</span>
+                <span>$0.00</span>
+            </div>
+            <div class="cart-summary-row total">
+                <span>Total:</span>
+                <span>${{ "%.2f"|format(total) }}</span>
+            </div>
+            <div class="cart-actions">
+                <a href="{{ url_for('products') }}" class="btn btn-secondary">Continue Shopping</a>
+                <a href="{{ url_for('checkout') }}" class="btn btn-primary">Proceed to Checkout</a>
+            </div>
+        </div>
+    {% else %}
+        <div class="empty-cart">
+            <i class="fas fa-shopping-cart fa-4x"></i>
+            <h2>Your cart is empty</h2>
+            <p>Looks like you haven't added any products to your cart yet.</p>
+            <a href="{{ url_for('products') }}" class="btn btn-primary">Start Shopping</a>
+        </div>
+    {% endif %}
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Quantity controls
+        const quantityForms = document.querySelectorAll('.quantity-form');
+        
+        quantityForms.forEach(form => {
+            const minusBtn = form.querySelector('.minus');
+            const plusBtn = form.querySelector('.plus');
+            const quantityInput = form.querySelector('input[name="quantity"]');
+            
+            minusBtn.addEventListener('click', function() {
+                let value = parseInt(quantityInput.value);
+                if (value > 1) {
+                    quantityInput.value = value - 1;
+                }
+            });
+            
+            plusBtn.addEventListener('click', function() {
+                let value = parseInt(quantityInput.value);
+                let max = parseInt(quantityInput.getAttribute('max'));
+                if (value < max) {
+                    quantityInput.value = value + 1;
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

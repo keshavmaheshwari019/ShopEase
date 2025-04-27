@@ -1,0 +1,278 @@
+[file name]: order_confirmation.html
+[file content begin]
+{% extends 'base.html' %}
+
+{% block title %}ShopEase - Order Confirmation{% endblock %}
+
+{% block content %}
+<section class="order-confirmation">
+    <div class="confirmation-container">
+        <div class="confirmation-header">
+            <i class="fas fa-check-circle"></i>
+            <h1>Order Confirmed!</h1>
+            <p>Thank you for your purchase. Your order has been successfully placed.</p>
+        </div>
+        
+        <div class="order-info">
+            <div class="order-info-row">
+                <span>Order Number:</span>
+                <span>#{{ order.id }}</span>
+            </div>
+            <div class="order-info-row">
+                <span>Order Date:</span>
+                <span>{% if order.created_at %}{{ order.created_at.strftime('%B %d, %Y') }}{% else %}Not available{% endif %}</span>
+            </div>
+            <div class="order-info-row">
+                <span>Payment Method:</span>
+                <span>{{ order.payment_method or 'Not specified' }}</span>
+            </div>
+            <div class="order-info-row">
+                <span>Payment Status:</span>
+                <span class="status-badge {{ order.payment_status.lower() }}">{{ order.payment_status }}</span>
+            </div>
+            <div class="order-info-row">
+                <span>Order Status:</span>
+                <span class="status-badge {{ order.order_status.lower() }}">{{ order.order_status }}</span>
+            </div>
+            <div class="order-info-row">
+                <span>Estimated Delivery:</span>
+                <span>
+                    {% if order.estimated_delivery %}{{ order.estimated_delivery.strftime('%B %d, %Y') }}{% else %}Not available{% endif %}
+                </span>
+            </div>
+        </div>
+        
+        <div class="delivery-timeline">
+            <h2>Delivery Timeline</h2>
+            <div class="timeline">
+                <div class="timeline-item active">
+                    <div class="timeline-icon">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <div class="timeline-content">
+                        <h4>Order Placed</h4>
+                        <p>{% if order.created_at %}{{ order.created_at.strftime('%B %d, %Y') }}{% else %}Not available{% endif %}</p>
+                    </div>
+                </div>
+                <div class="timeline-item {% if order.order_status != 'Pending' %}active{% endif %}">
+                    <div class="timeline-icon">
+                        <i class="fas fa-box"></i>
+                    </div>
+                    <div class="timeline-content">
+                        <h4>Processing</h4>
+                        <p>Your order is being prepared</p>
+                    </div>
+                </div>
+                <div class="timeline-item {% if order.order_status == 'Shipped' or order.order_status == 'Delivered' %}active{% endif %}">
+                    <div class="timeline-icon">
+                        <i class="fas fa-shipping-fast"></i>
+                    </div>
+                    <div class="timeline-content">
+                        <h4>Shipped</h4>
+                        <p>Your order is on the way</p>
+                    </div>
+                </div>
+                <div class="timeline-item {% if order.order_status == 'Delivered' %}active{% endif %}">
+                    <div class="timeline-icon">
+                        <i class="fas fa-home"></i>
+                    </div>
+                    <div class="timeline-content">
+                        <h4>Delivered</h4>
+                        <p>
+                            {% if order.estimated_delivery %}{{ order.estimated_delivery.strftime('%B %d, %Y') }}{% else %}Delivery date not available{% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="order-items">
+            <h2>Order Items</h2>
+            <div class="order-items-list">
+                {% for item in order.items %}
+                <div class="order-item">
+                    <div class="order-item-image">
+                        <img src="{{ item.product.image_url }}" alt="{{ item.product.name }}">
+                    </div>
+                    <div class="order-item-details">
+                        <h3>{{ item.product.name }}</h3>
+                        <p>Quantity: {{ item.quantity }}</p>
+                        <p class="order-item-price">${{ "%.2f"|format(item.product.price * item.quantity) }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <div class="order-summary">
+            <h2>Order Summary</h2>
+            <div class="order-summary-row">
+                <span>Subtotal:</span>
+                <span>${{ "%.2f"|format(order.total_amount / 1.1) }}</span>
+            </div>
+            <div class="order-summary-row">
+                <span>Tax (10%):</span>
+                <span>${{ "%.2f"|format(order.total_amount - (order.total_amount / 1.1)) }}</span>
+            </div>
+            <div class="order-summary-row total">
+                <span>Total:</span>
+                <span>${{ "%.2f"|format(order.total_amount) }}</span>
+            </div>
+        </div>
+        
+        <div class="shipping-address">
+            <h2>Shipping Address</h2>
+            <p>{{ order.shipping_address or 'Not specified' }}</p>
+        </div>
+        
+        <div class="confirmation-actions">
+            <a href="{{ url_for('orders') }}" class="btn btn-secondary">View All Orders</a>
+            <a href="{{ url_for('products') }}" class="btn btn-primary">Continue Shopping</a>
+        </div>
+    </div>
+</section>
+{% endblock %}
+[file content end]
+
+[file name]: order_detail.html
+[file content begin]
+{% extends 'base.html' %}
+
+{% block title %}ShopEase - Order #{{ order.id }}{% endblock %}
+
+{% block content %}
+<section class="order-detail-container">
+    <div class="order-detail-header">
+        <h1>Order #{{ order.id }}</h1>
+        <div class="order-detail-status">
+            <div class="status-item">
+                <span class="status-label">Order Status:</span>
+                <span class="status-badge {{ order.order_status.lower() }}">{{ order.order_status }}</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Payment Status:</span>
+                <span class="status-badge {{ order.payment_status.lower() }}">{{ order.payment_status }}</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="order-detail-grid">
+        <div class="order-detail-info">
+            <div class="order-detail-section">
+                <h2>Order Information</h2>
+                <div class="order-info-grid">
+                    <div class="order-info-item">
+                        <span class="info-label">Order Date:</span>
+                        <span>{% if order.created_at %}{{ order.created_at.strftime('%B %d, %Y') }}{% else %}Not available{% endif %}</span>
+                    </div>
+                    <div class="order-info-item">
+                        <span class="info-label">Payment Method:</span>
+                        <span>{{ order.payment_method or 'Not specified' }}</span>
+                    </div>
+                    <div class="order-info-item">
+                        <span class="info-label">Estimated Delivery:</span>
+                        <span>
+                            {% if order.estimated_delivery %}{{ order.estimated_delivery.strftime('%B %d, %Y') }}{% else %}Not available{% endif %}
+                        </span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="order-detail-section">
+                <h2>Shipping Address</h2>
+                <div class="shipping-address">
+                    <p>{{ order.shipping_address or 'Not specified' }}</p>
+                </div>
+            </div>
+            
+            <div class="order-detail-section">
+                <h2>Order Timeline</h2>
+                <div class="order-timeline">
+                    <div class="timeline-item active">
+                        <div class="timeline-icon">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <h4>Order Placed</h4>
+                            <p>{% if order.created_at %}{{ order.created_at.strftime('%B %d, %Y') }}{% else %}Not available{% endif %}</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item {% if order.order_status != 'Pending' %}active{% endif %}">
+                        <div class="timeline-icon">
+                            <i class="fas fa-box"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <h4>Processing</h4>
+                            <p>Your order is being prepared</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item {% if order.order_status == 'Shipped' or order.order_status == 'Delivered' %}active{% endif %}">
+                        <div class="timeline-icon">
+                            <i class="fas fa-shipping-fast"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <h4>Shipped</h4>
+                            <p>Your order is on the way</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item {% if order.order_status == 'Delivered' %}active{% endif %}">
+                        <div class="timeline-icon">
+                            <i class="fas fa-home"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <h4>Delivered</h4>
+                            <p>
+                                {% if order.estimated_delivery %}{{ order.estimated_delivery.strftime('%B %d, %Y') }}{% else %}Delivery date not available{% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="order-detail-items">
+            <h2>Order Items</h2>
+            <div class="order-items-list">
+                {% for item in order.items %}
+                    <div class="order-item">
+                        <div class="order-item-image">
+                            <img src="{{ item.product.image_url }}" alt="{{ item.product.name }}">
+                        </div>
+                        <div class="order-item-details">
+                            <h3>{{ item.product.name }}</h3>
+                            <p>Quantity: {{ item.quantity }}</p>
+                            <p class="order-item-price">${{ "%.2f"|format(item.product.price) }} each</p>
+                            <p class="order-item-total">Total: ${{ "%.2f"|format(item.product.price * item.quantity) }}</p>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            
+            <div class="order-summary">
+                <div class="order-summary-row">
+                    <span>Subtotal:</span>
+                    <span>${{ "%.2f"|format(order.total_amount / 1.1) }}</span>
+                </div>
+                <div class="order-summary-row">
+                    <span>Tax (10%):</span>
+                    <span>${{ "%.2f"|format(order.total_amount - (order.total_amount / 1.1)) }}</span>
+                </div>
+                <div class="order-summary-row total">
+                    <span>Total:</span>
+                    <span>${{ "%.2f"|format(order.total_amount) }}</span>
+                </div>
+            </div>
+            
+            <div class="order-actions">
+                <a href="{{ url_for('orders') }}" class="btn btn-secondary">Back to Orders</a>
+                {% if order.order_status == 'Pending' %}
+                    <form action="{{ url_for('cancel_order', order_id=order.id) }}" method="POST" onsubmit="return confirm('Are you sure you want to cancel this order?');">
+                        <button type="submit" class="btn btn-danger">Cancel Order</button>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+[file content end]

@@ -1,0 +1,196 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ product.name }} - ShopEase{% endblock %}
+
+{% block content %}
+<section class="product-detail">
+    <div class="product-detail-container">
+        <div class="product-detail-image">
+            <img src="{{ product.image_url }}" alt="{{ product.name }}">
+        </div>
+        <div class="product-detail-info">
+            <h1>{{ product.name }}</h1>
+            <p class="product-detail-category">Category: {{ product.category }}</p>
+            <p class="product-detail-price">${{ "%.2f"|format(product.price) }}</p>
+            <div class="product-detail-stock">
+                {% if product.stock > 0 %}
+                    <span class="in-stock">In Stock ({{ product.stock }} available)</span>
+                {% else %}
+                    <span class="out-of-stock">Out of Stock</span>
+                {% endif %}
+            </div>
+            <div class="product-detail-description">
+                <h3>Description</h3>
+                <p>{{ product.description }}</p>
+            </div>
+            {% if product.stock > 0 %}
+                <form action="{{ url_for('add_to_cart', product_id=product.id) }}" method="POST" class="add-to-cart-form">
+                    <div class="quantity-selector">
+                        <label for="quantity">Quantity:</label>
+                        <div class="quantity-controls">
+                            <button type="button" class="quantity-btn minus">-</button>
+                            <input type="number" id="quantity" name="quantity" value="1" min="1" max="{{ product.stock }}">
+                            <button type="button" class="quantity-btn plus">+</button>
+                        </div>
+                    </div>
+                    <div class="product-detail-actions">
+                        <button type="submit" class="btn btn-primary"><i class="fas fa-cart-plus"></i> Add to Cart</button>
+                        <button type="submit" name="buy_now" value="true" class="btn btn-success"><i class="fas fa-bolt"></i> Buy Now</button>
+                        <button type="button" class="btn btn-secondary wishlist-btn"><i class="far fa-heart"></i> Add to Wishlist</button>
+                    </div>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<section class="product-tabs">
+    <div class="tabs">
+        <button class="tab-btn active" data-tab="details">Details</button>
+        <button class="tab-btn" data-tab="reviews">Reviews</button>
+        <button class="tab-btn" data-tab="shipping">Shipping & Returns</button>
+    </div>
+    <div class="tab-content">
+        <div class="tab-pane active" id="details">
+            <h3>Product Details</h3>
+            <p>{{ product.description }}</p>
+            <ul class="product-features">
+                <li>High-quality materials</li>
+                <li>Durable construction</li>
+                <li>Easy to use</li>
+                <li>30-day warranty</li>
+            </ul>
+        </div>
+        <div class="tab-pane" id="reviews">
+            <h3>Customer Reviews</h3>
+            <div class="reviews-container">
+                <div class="review">
+                    <div class="review-header">
+                        <div class="review-author">John D.</div>
+                        <div class="review-rating">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                    <div class="review-date">October 15, 2023</div>
+                    <div class="review-content">
+                        <p>Great product! Exactly as described and arrived quickly.</p>
+                    </div>
+                </div>
+                <div class="review">
+                    <div class="review-header">
+                        <div class="review-author">Sarah M.</div>
+                        <div class="review-rating">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="far fa-star"></i>
+                        </div>
+                    </div>
+                    <div class="review-date">September 28, 2023</div>
+                    <div class="review-content">
+                        <p>Good quality for the price. Would recommend.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="tab-pane" id="shipping">
+            <h3>Shipping & Returns</h3>
+            <h4>Shipping Policy</h4>
+            <p>We offer free standard shipping on all orders over $50. Orders are typically processed within 1-2 business days. Delivery times vary depending on location but generally take 3-5 business days.</p>
+            <h4>Return Policy</h4>
+            <p>If you're not completely satisfied with your purchase, you can return it within 30 days for a full refund. Items must be in original condition with all packaging and tags.</p>
+        </div>
+    </div>
+</section>
+
+<section class="related-products">
+    <h2>You May Also Like</h2>
+    <div class="product-grid">
+        {% for related_product in related_products %}
+        <div class="product-card">
+            <div class="product-image">
+                <img src="{{ related_product.image_url }}" alt="{{ related_product.name }}">
+            </div>
+            <div class="product-info">
+                <h3>{{ related_product.name }}</h3>
+                <p class="product-price">${{ "%.2f"|format(related_product.price) }}</p>
+                <div class="product-actions">
+                    <a href="{{ url_for('product_detail', product_id=related_product.id) }}" class="btn btn-primary">View Details</a>
+                    <form action="{{ url_for('add_to_cart', product_id=related_product.id) }}" method="POST">
+                        <input type="hidden" name="quantity" value="1">
+                        <button type="submit" class="btn btn-secondary"><i class="fas fa-cart-plus"></i></button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Quantity selector
+        const quantityInput = document.getElementById('quantity');
+        const minusBtn = document.querySelector('.quantity-btn.minus');
+        const plusBtn = document.querySelector('.quantity-btn.plus');
+        
+        if (minusBtn && plusBtn && quantityInput) {
+            minusBtn.addEventListener('click', function() {
+                let value = parseInt(quantityInput.value);
+                if (value > 1) {
+                    quantityInput.value = value - 1;
+                }
+            });
+            
+            plusBtn.addEventListener('click', function() {
+                let value = parseInt(quantityInput.value);
+                let max = parseInt(quantityInput.getAttribute('max'));
+                if (value < max) {
+                    quantityInput.value = value + 1;
+                }
+            });
+        }
+        
+        // Tabs
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const tabPanes = document.querySelectorAll('.tab-pane');
+        
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Remove active class from all buttons and panes
+                tabBtns.forEach(b => b.classList.remove('active'));
+                tabPanes.forEach(p => p.classList.remove('active'));
+                
+                // Add active class to clicked button and corresponding pane
+                this.classList.add('active');
+                const tabId = this.getAttribute('data-tab');
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+        
+        // Wishlist button
+        const wishlistBtn = document.querySelector('.wishlist-btn');
+        if (wishlistBtn) {
+            wishlistBtn.addEventListener('click', function() {
+                const icon = this.querySelector('i');
+                if (icon.classList.contains('far')) {
+                    icon.classList.remove('far');
+                    icon.classList.add('fas');
+                    alert('Product added to wishlist!');
+                } else {
+                    icon.classList.remove('fas');
+                    icon.classList.add('far');
+                    alert('Product removed from wishlist!');
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

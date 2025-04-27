@@ -1,0 +1,151 @@
+{% extends 'admin/base.html' %}
+
+{% block title %}ShopEase - Order #{{ order.id }}{% endblock %}
+
+{% block content %}
+<section class="admin-container">
+    <div class="admin-sidebar">
+        <h2>Admin Panel</h2>
+        <nav class="admin-nav">
+            <ul>
+                <li><a href="{{ url_for('admin_dashboard') }}"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                <li><a href="{{ url_for('admin_products') }}"><i class="fas fa-box"></i> Products</a></li>
+                <li class="active"><a href="{{ url_for('admin_orders') }}"><i class="fas fa-shopping-cart"></i> Orders</a></li>
+                <li><a href="{{ url_for('admin_users') }}"><i class="fas fa-users"></i> Users</a></li>
+            </ul>
+        </nav>
+    </div>
+    
+    <div class="admin-content">
+        <div class="admin-header">
+            <h1>Order #{{ order.id }}</h1>
+            <a href="{{ url_for('admin_orders') }}" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Back to Orders</a>
+        </div>
+        
+        <div class="order-detail-grid">
+            <div class="order-detail-info">
+                <div class="order-detail-section">
+                    <h2>Order Information</h2>
+                    <div class="order-info-grid">
+                        <div class="order-info-item">
+                            <span class="info-label">Customer:</span>
+                            <span>{{ order.customer.name }}</span>
+                        </div>
+                        <div class="order-info-item">
+                            <span class="info-label">Email:</span>
+                            <span>{{ order.customer.email }}</span>
+                        </div>
+                        <div class="order-info-item">
+                            <span class="info-label">Order Date:</span>
+                            <span>
+                                {% if order.created_at %}
+                                    {{ order.created_at.strftime('%B %d, %Y') }}
+                                {% else %}
+                                    Not available
+                                {% endif %}
+                            </span>
+                        </div>
+                        <div class="order-info-item">
+                            <span class="info-label">Payment Method:</span>
+                            <span>{{ order.payment_method or 'Not specified' }}</span>
+                        </div>
+                        <div class="order-info-item">
+                            <span class="info-label">Payment Status:</span>
+                            <span class="status-badge {{ order.payment_status.lower() }}">{{ order.payment_status }}</span>
+                        </div>
+                        <div class="order-info-item">
+                            <span class="info-label">Order Status:</span>
+                            <span class="status-badge {{ order.order_status.lower() }}">{{ order.order_status }}</span>
+                        </div>
+                        <div class="order-info-item">
+                            <span class="info-label">Estimated Delivery:</span>
+                            <span>
+                                {% if order.estimated_delivery %}
+                                    {{ order.estimated_delivery.strftime('%B %d, %Y') }}
+                                {% else %}
+                                    Not available
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="order-detail-section">
+                    <h2>Shipping Address</h2>
+                    <div class="shipping-address">
+                        <p>{{ order.shipping_address or 'Not specified' }}</p>
+                    </div>
+                </div>
+                
+                <div class="order-detail-section">
+                    <h2>Update Order Status</h2>
+                    <form action="{{ url_for('admin_update_order', order_id=order.id) }}" method="POST" class="update-order-form">
+                        <div class="form-group">
+                            <label for="order_status">Order Status</label>
+                            <select id="order_status" name="order_status" class="form-control">
+                                <option value="Pending" {% if order.order_status == 'Pending' %}selected{% endif %}>Pending</option>
+                                <option value="Processing" {% if order.order_status == 'Processing' %}selected{% endif %}>Processing</option>
+                                <option value="Shipped" {% if order.order_status == 'Shipped' %}selected{% endif %}>Shipped</option>
+                                <option value="Delivered" {% if order.order_status == 'Delivered' %}selected{% endif %}>Delivered</option>
+                                <option value="Cancelled" {% if order.order_status == 'Cancelled' %}selected{% endif %}>Cancelled</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Update Status</button>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="order-detail-items">
+                <h2>Order Items</h2>
+                <div class="table-responsive">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Price</th>
+                                <th>Quantity</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in order.items %}
+                                <tr>
+                                    <td>
+                                        <div class="product-info">
+                                            <div class="product-image-small">
+                                                <img src="{{ item.product.image_url }}" alt="{{ item.product.name }}">
+                                            </div>
+                                            <div class="product-details">
+                                                <h4>{{ item.product.name }}</h4>
+                                                <p>{{ item.product.category }}</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>${{ "%.2f"|format(item.product.price) }}</td>
+                                    <td>{{ item.quantity }}</td>
+                                    <td>${{ "%.2f"|format(item.product.price * item.quantity) }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="order-summary">
+                    <div class="order-summary-row">
+                        <span>Subtotal:</span>
+                        <span>${{ "%.2f"|format(order.total_amount / 1.1) }}</span>
+                    </div>
+                    <div class="order-summary-row">
+                        <span>Tax (10%):</span>
+                        <span>${{ "%.2f"|format(order.total_amount - (order.total_amount / 1.1)) }}</span>
+                    </div>
+                    <div class="order-summary-row total">
+                        <span>Total:</span>
+                        <span>${{ "%.2f"|format(order.total_amount) }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

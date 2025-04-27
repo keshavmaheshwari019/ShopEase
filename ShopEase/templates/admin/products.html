@@ -1,0 +1,102 @@
+{% extends 'admin/base.html' %}
+
+{% block title %}ShopEase - Admin Products{% endblock %}
+
+{% block content %}
+<section class="admin-content">
+    <div class="admin-header">
+        <h1>Products</h1>
+        <div>
+            <a href="{{ url_for('admin_add_product') }}" class="btn btn-primary"><i class="fas fa-plus"></i> Add Product</a>
+            <a href="{{ url_for('admin_add_multiple_products') }}" class="btn btn-secondary"><i class="fas fa-layer-group"></i> Add Multiple Products</a>
+        </div>
+    </div>
+    
+    <div class="admin-filters">
+        <div class="search-container">
+            <input type="text" id="product-search" placeholder="Search products...">
+            <button type="button"><i class="fas fa-search"></i></button>
+        </div>
+        <div class="filter-container">
+            <select id="category-filter">
+                <option value="">All Categories</option>
+                <option value="Electronics">Electronics</option>
+                <option value="Clothing">Clothing</option>
+                <option value="Home">Home</option>
+                <option value="Books">Books</option>
+            </select>
+        </div>
+    </div>
+    
+    <div class="table-responsive">
+        <table class="admin-table" id="products-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Image</th>
+                    <th>Name</th>
+                    <th>Category</th>
+                    <th>Price</th>
+                    <th>Stock</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in products %}
+                    <tr data-category="{{ product.category }}">
+                        <td>{{ product.id }}</td>
+                        <td>
+                            <div class="product-image-small">
+                                <img src="{{ product.image_url }}" alt="{{ product.name }}">
+                            </div>
+                        </td>
+                        <td>{{ product.name }}</td>
+                        <td>{{ product.category }}</td>
+                        <td>${{ "%.2f"|format(product.price) }}</td>
+                        <td>{{ product.stock }}</td>
+                        <td>
+                            <div class="action-buttons">
+                                <a href="{{ url_for('admin_edit_product', product_id=product.id) }}" class="btn btn-sm btn-secondary"><i class="fas fa-edit"></i></a>
+                                <a href="{{ url_for('admin_delete_product', product_id=product.id) }}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this product?')"><i class="fas fa-trash"></i></a>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('product-search');
+        const categoryFilter = document.getElementById('category-filter');
+        const tableRows = document.querySelectorAll('#products-table tbody tr');
+        
+        // Search functionality
+        searchInput.addEventListener('input', filterProducts);
+        categoryFilter.addEventListener('change', filterProducts);
+        
+        function filterProducts() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const categoryValue = categoryFilter.value;
+            
+            tableRows.forEach(row => {
+                const name = row.cells[2].textContent.toLowerCase();
+                const category = row.getAttribute('data-category');
+                
+                const matchesSearch = name.includes(searchTerm);
+                const matchesCategory = !categoryValue || category === categoryValue;
+                
+                if (matchesSearch && matchesCategory) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

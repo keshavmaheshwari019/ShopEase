@@ -1,0 +1,166 @@
+{% extends 'base.html' %}
+
+{% block title %}ShopEase - Home{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div class="hero-content">
+        <h1>Welcome to ShopEase</h1>
+        <p>Your one-stop shop for all your needs. Browse our wide selection of products and enjoy hassle-free shopping.</p>
+        <a href="{{ url_for('products') }}" class="btn btn-primary">Shop Now</a>
+    </div>
+</section>
+
+<section class="featured-categories">
+    <h2>Shop by Category</h2>
+    <div class="category-grid">
+        <div class="category-card">
+            <img src="/static/images/electronics.jpg" alt="Electronics">
+            <h3>Electronics</h3>
+            <a href="{{ url_for('products', category='Electronics') }}" class="btn btn-primary">Browse Electronics</a>
+        </div>
+        <div class="category-card">
+            <img src="/static/images/clothing.jpg" alt="Clothing">
+            <h3>Clothing</h3>
+            <a href="{{ url_for('products', category='Clothing') }}" class="btn btn-primary">Browse Clothing</a>
+        </div>
+        <div class="category-card">
+            <img src="/static/images/home.jpg" alt="Home">
+            <h3>Home</h3>
+            <a href="{{ url_for('products', category='Home') }}" class="btn btn-primary">Browse Home</a>
+        </div>
+        <div class="category-card">
+            <img src="/static/images/books.jpg" alt="Books">
+            <h3>Books</h3>
+            <a href="{{ url_for('products', category='Books') }}" class="btn btn-primary">Browse Books</a>
+        </div>
+    </div>
+</section>
+
+<section class="featured-category">
+    <h2><i class="fas fa-laptop"></i> Featured Electronics</h2>
+    <hr>
+    <div class="product-grid">
+        {% for product in electronics %}
+        <div class="product-card">
+            <div class="product-image">
+                <img src="{{ product.image_url }}" alt="{{ product.name }}">
+            </div>
+            <div class="product-info">
+                <h3>{{ product.name }}</h3>
+                <p class="product-category">{{ product.category }}</p>
+                <p class="product-price">${{ "%.2f"|format(product.price) }}</p>
+                <div class="product-actions">
+                    <a href="{{ url_for('product_detail', product_id=product.id) }}" class="btn btn-primary">View Details</a>
+                    <form action="{{ url_for('add_to_cart', product_id=product.id) }}" method="POST">
+                        <input type="hidden" name="quantity" value="1">
+                        <button type="submit" class="btn btn-secondary"><i class="fas fa-cart-plus"></i></button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <div class="view-all">
+        <a href="{{ url_for('products', category='Electronics') }}" class="btn btn-secondary">View All Electronics</a>
+    </div>
+</section>
+
+<section class="featured-category">
+    <h2><i class="fas fa-tshirt"></i> Featured Clothing</h2>
+    <hr>
+    <div class="product-grid">
+        {% for product in clothing %}
+        <div class="product-card">
+            <div class="product-image">
+                <img src="{{ product.image_url }}" alt="{{ product.name }}">
+            </div>
+            <div class="product-info">
+                <h3>{{ product.name }}</h3>
+                <p class="product-category">{{ product.category }}</p>
+                <p class="product-price">${{ "%.2f"|format(product.price) }}</p>
+                <div class="product-actions">
+                    <a href="{{ url_for('product_detail', product_id=product.id) }}" class="btn btn-primary">View Details</a>
+                    <form action="{{ url_for('add_to_cart', product_id=product.id) }}" method="POST">
+                        <input type="hidden" name="quantity" value="1">
+                        <button type="submit" class="btn btn-secondary"><i class="fas fa-cart-plus"></i></button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <div class="view-all">
+        <a href="{{ url_for('products', category='Clothing') }}" class="btn btn-secondary">View All Clothing</a>
+    </div>
+</section>
+
+<section class="featured-category">
+    <h2><i class="fas fa-home"></i> Featured Home Products</h2>
+    <hr>
+    <div class="product-grid">
+        {% for product in home_products %}
+        <div class="product-card">
+            <div class="product-image">
+                <img src="{{ product.image_url }}" alt="{{ product.name }}">
+            </div>
+            <div class="product-info">
+                <h3>{{ product.name }}</h3>
+                <p class="product-category">{{ product.category }}</p>
+                <p class="product-price">${{ "%.2f"|format(product.price) }}</p>
+                <div class="product-actions">
+                    <a href="{{ url_for('product_detail', product_id=product.id) }}" class="btn btn-primary">View Details</a>
+                    <form action="{{ url_for('add_to_cart', product_id=product.id) }}" method="POST">
+                        <input type="hidden" name="quantity" value="1">
+                        <button type="submit" class="btn btn-secondary"><i class="fas fa-cart-plus"></i></button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <div class="view-all">
+        <a href="{{ url_for('products', category='Home') }}" class="btn btn-secondary">View All Home Products</a>
+    </div>
+</section>
+
+<section class="featured-category">
+    <h2><i class="fas fa-book"></i> Featured Books</h2>
+    <hr>
+    <div class="product-grid">
+        {% for product in books %}
+        <div class="product-card">
+            <div class="product-image">
+                <img src="{{ product.image_url }}" alt="{{ product.name }}">
+            </div>
+            <div class="product-info">
+                <h3>{{ product.name }}</h3>
+                <p class="product-category">{{ product.category }}</p>
+                <p class="product-price">${{ "%.2f"|format(product.price) }}</p>
+                <div class="product-actions">
+                    <a href="{{ url_for('product_detail', product_id=product.id) }}" class="btn btn-primary">View Details</a>
+                    <form action="{{ url_for('add_to_cart', product_id=product.id) }}" method="POST">
+                        <input type="hidden" name="quantity" value="1">
+                        <button type="submit" class="btn btn-secondary"><i class="fas fa-cart-plus"></i></button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <div class="view-all">
+        <a href="{{ url_for('products', category='Books') }}" class="btn btn-secondary">View All Books</a>
+    </div>
+</section>
+
+<section class="newsletter">
+    <div class="newsletter-content">
+        <h2>Subscribe to Our Newsletter</h2>
+        <p>Stay updated with our latest products and offers.</p>
+        <form class="newsletter-form">
+            <input type="email" placeholder="Enter your email" required>
+            <button type="submit" class="btn btn-secondary">Subscribe</button>
+        </form>
+    </div>
+</section>
+{% endblock %}

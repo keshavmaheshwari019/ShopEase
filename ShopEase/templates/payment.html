@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+
+{% block title %}ShopEase - Payment{% endblock %}
+
+{% block content %}
+<section class="payment-container">
+    <h1>Payment</h1>
+    
+    <div class="payment-grid">
+        <div class="payment-form-container">
+            <div class="payment-methods">
+                <h2>Complete Your Payment</h2>
+                
+                {% if order.payment_method == 'PhonePe' %}
+                <div class="payment-method-content">
+                    <div class="phonepe-info">
+                        <div class="payment-logo">
+                            <i class="fas fa-mobile-alt fa-3x"></i>
+                            <h3>PhonePe Payment</h3>
+                        </div>
+                        <p>You have selected to pay with PhonePe. Please complete your payment to process your order.</p>
+                        <div class="phonepe-qr">
+                            <img src="/static/images/phonepe-qr.png" alt="PhonePe QR Code">
+                            <p>Scan this QR code with your PhonePe app</p>
+                        </div>
+                        <p>Or click the button below to proceed with payment:</p>
+                        <form action="{{ url_for('process_payment', order_id=order.id) }}" method="POST">
+                            <input type="hidden" name="payment_method" value="PhonePe">
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-phonepe">Pay with PhonePe</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                {% else %}
+                <div class="payment-method-content">
+                    <div class="cod-info">
+                        <div class="payment-logo">
+                            <i class="fas fa-money-bill-wave fa-3x"></i>
+                            <h3>Cash on Delivery</h3>
+                        </div>
+                        <p>You have selected Cash on Delivery. You will pay when your order is delivered.</p>
+                        <p>Your order will be processed immediately and shipped to your address.</p>
+                        <p>The delivery person will collect the payment of ${{ "%.2f"|format(order.total_amount) }} when your order is delivered.</p>
+                        <form action="{{ url_for('process_payment', order_id=order.id) }}" method="POST">
+                            <input type="hidden" name="payment_method" value="Cash on Delivery">
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary">Confirm Order</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="order-summary">
+            <h2>Order Summary</h2>
+            <div class="order-details">
+                <div class="order-detail-row">
+                    <span>Order ID:</span>
+                    <span>#{{ order.id }}</span>
+                </div>
+                <div class="order-detail-row">
+                    <span>Date:</span>
+                    <span>{{ order.created_at.strftime('%B %d, %Y') }}</span>
+                </div>
+                <div class="order-detail-row">
+                    <span>Items:</span>
+                    <span>{{ order.items|length }}</span>
+                </div>
+                <div class="order-detail-row">
+                    <span>Payment Method:</span>
+                    <span>{{ order.payment_method }}</span>
+                </div>
+            </div>
+            <div class="order-items">
+                {% for item in order.items %}
+                <div class="order-item">
+                    <div class="order-item-image">
+                        <img src="{{ item.product.image_url }}" alt="{{ item.product.name }}">
+                    </div>
+                    <div class="order-item-details">
+                        <h3>{{ item.product.name }}</h3>
+                        <p>Quantity: {{ item.quantity }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="order-totals">
+                <div class="order-total-row">
+                    <span>Subtotal:</span>
+                    <span>${{ "%.2f"|format(order.total_amount / 1.1) }}</span>
+                </div>
+                <div class="order-total-row">
+                    <span>Tax (10%):</span>
+                    <span>${{ "%.2f"|format(order.total_amount - (order.total_amount / 1.1)) }}</span>
+                </div>
+                <div class="order-total-row total">
+                    <span>Total:</span>
+                    <span>${{ "%.2f"|format(order.total_amount) }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

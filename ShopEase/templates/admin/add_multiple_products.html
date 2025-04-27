@@ -1,0 +1,264 @@
+{% extends 'admin/base.html' %}
+
+{% block title %}ShopEase - Add Multiple Products{% endblock %}
+
+{% block content %}
+<section class="admin-content-header">
+    <div class="admin-header">
+        <h1>Add Multiple Products</h1>
+        <a href="{{ url_for('admin_products') }}" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Back to Products</a>
+    </div>
+    
+    <div class="multi-product-form">
+        <form id="multiple-products-form" action="{{ url_for('admin_add_product') }}" method="POST" enctype="multipart/form-data">
+            <div id="products-container">
+                <!-- Product Entry Template -->
+                <div class="product-entry" data-index="0">
+                    <div class="product-entry-header">
+                        <h3>Product #1</h3>
+                        <button type="button" class="remove-product" onclick="removeProduct(this)"><i class="fas fa-times"></i></button>
+                    </div>
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="name_0">Product Name</label>
+                            <input type="text" id="name_0" name="products[0][name]" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="price_0">Price ($)</label>
+                            <input type="number" id="price_0" name="products[0][price]" step="0.01" min="0" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="category_0">Category</label>
+                            <select id="category_0" name="products[0][category]" required>
+                                <option value="">Select Category</option>
+                                <option value="Electronics">Electronics</option>
+                                <option value="Clothing">Clothing</option>
+                                <option value="Home">Home</option>
+                                <option value="Books">Books</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="stock_0">Stock</label>
+                            <input type="number" id="stock_0" name="products[0][stock]" min="0" required>
+                        </div>
+                        
+                        <div class="form-group full-width">
+                            <label for="image_url_0">Image URL</label>
+                            <div class="image-upload-container">
+                                <input type="url" id="image_url_0" name="products[0][image_url]" required>
+                                <div class="or-divider">OR</div>
+                                <div class="file-upload">
+                                    <input type="file" id="product_image_0" name="products[0][image]" accept="image/*" multiple onchange="handleImageUpload(this, 0)">
+                                    <button type="button" class="btn btn-secondary" onclick="triggerFileInput(0)">Upload Images</button>
+                                </div>
+                            </div>
+                            <div class="product-images-container" id="image-preview-0"></div>
+                        </div>
+                        
+                        <div class="form-group full-width">
+                            <label for="description_0">Description</label>
+                            <textarea id="description_0" name="products[0][description]" rows="5" required></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary add-product-btn" onclick="addProduct()">
+                    <i class="fas fa-plus"></i> Add Another Product
+                </button>
+                <button type="submit" class="btn btn-primary">Save All Products</button>
+            </div>
+        </form>
+    </div>
+</section>
+
+<style>
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+    
+    .full-width {
+        grid-column: span 2;
+    }
+    
+    .product-entry {
+        background-color: #f9f9f9;
+        margin-bottom: 2rem;
+        padding: 1.5rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    
+    .product-entry-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+    
+    .product-images-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 0.75rem;
+        margin-top: 1rem;
+    }
+    
+    .product-image-preview {
+        position: relative;
+        height: 120px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+    
+    .product-image-preview img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .remove-image {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        background: rgba(255,255,255,0.8);
+        border: none;
+        border-radius: 50%;
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+    }
+    
+    .add-product-btn {
+        margin-right: 1rem;
+    }
+</style>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    let productCount = 1;
+    
+    function addProduct() {
+        const container = document.getElementById('products-container');
+        const newIndex = productCount;
+        
+        const productEntry = document.createElement('div');
+        productEntry.className = 'product-entry';
+        productEntry.dataset.index = newIndex;
+        
+        productEntry.innerHTML = `
+            <div class="product-entry-header">
+                <h3>Product #${productCount + 1}</h3>
+                <button type="button" class="remove-product" onclick="removeProduct(this)"><i class="fas fa-times"></i></button>
+            </div>
+            
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="name_${newIndex}">Product Name</label>
+                    <input type="text" id="name_${newIndex}" name="products[${newIndex}][name]" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="price_${newIndex}">Price ($)</label>
+                    <input type="number" id="price_${newIndex}" name="products[${newIndex}][price]" step="0.01" min="0" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="category_${newIndex}">Category</label>
+                    <select id="category_${newIndex}" name="products[${newIndex}][category]" required>
+                        <option value="">Select Category</option>
+                        <option value="Electronics">Electronics</option>
+                        <option value="Clothing">Clothing</option>
+                        <option value="Home">Home</option>
+                        <option value="Books">Books</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="stock_${newIndex}">Stock</label>
+                    <input type="number" id="stock_${newIndex}" name="products[${newIndex}][stock]" min="0" required>
+                </div>
+                
+                <div class="form-group full-width">
+                    <label for="image_url_${newIndex}">Image URL</label>
+                    <div class="image-upload-container">
+                        <input type="url" id="image_url_${newIndex}" name="products[${newIndex}][image_url]" required>
+                        <div class="or-divider">OR</div>
+                        <div class="file-upload">
+                            <input type="file" id="product_image_${newIndex}" name="products[${newIndex}][image]" accept="image/*" multiple onchange="handleImageUpload(this, ${newIndex})">
+                            <button type="button" class="btn btn-secondary" onclick="triggerFileInput(${newIndex})">Upload Images</button>
+                        </div>
+                    </div>
+                    <div class="product-images-container" id="image-preview-${newIndex}"></div>
+                </div>
+                
+                <div class="form-group full-width">
+                    <label for="description_${newIndex}">Description</label>
+                    <textarea id="description_${newIndex}" name="products[${newIndex}][description]" rows="5" required></textarea>
+                </div>
+            </div>
+        `;
+        
+        container.appendChild(productEntry);
+        productCount++;
+    }
+    
+    function removeProduct(button) {
+        const productEntry = button.closest('.product-entry');
+        if (document.querySelectorAll('.product-entry').length > 1) {
+            productEntry.remove();
+        } else {
+            alert('You must have at least one product.');
+        }
+    }
+    
+    function triggerFileInput(index) {
+        document.getElementById(`product_image_${index}`).click();
+    }
+    
+    function handleImageUpload(input, index) {
+        const previewContainer = document.getElementById(`image-preview-${index}`);
+        previewContainer.innerHTML = '';
+        
+        if (input.files && input.files.length > 0) {
+            for (let i = 0; i < input.files.length; i++) {
+                const file = input.files[i];
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    const preview = document.createElement('div');
+                    preview.className = 'product-image-preview';
+                    preview.innerHTML = `
+                        <img src="${e.target.result}" alt="Product Image">
+                        <button type="button" class="remove-image" onclick="removePreview(this)">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    `;
+                    previewContainer.appendChild(preview);
+                }
+                
+                reader.readAsDataURL(file);
+            }
+            
+            // Update the image URL field
+            document.getElementById(`image_url_${index}`).value = 'Images will be uploaded';
+        }
+    }
+    
+    function removePreview(button) {
+        button.closest('.product-image-preview').remove();
+    }
+</script>
+{% endblock %}

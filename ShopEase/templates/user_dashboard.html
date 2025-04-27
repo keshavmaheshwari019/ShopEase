@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+
+{% block title %}ShopEase - My Dashboard{% endblock %}
+
+{% block content %}
+<section class="dashboard-container">
+    <div class="dashboard-header">
+        <h1>Welcome, {{ user.name }}!</h1>
+        <div class="dashboard-actions">
+            <a href="{{ url_for('products') }}" class="btn btn-primary"><i class="fas fa-shopping-bag"></i> Continue Shopping</a>
+            <a href="{{ url_for('orders') }}" class="btn btn-secondary"><i class="fas fa-list"></i> View All Orders</a>
+        </div>
+    </div>
+    
+    <div class="dashboard-grid">
+        <div class="dashboard-card account-summary">
+            <div class="card-header">
+                <h2><i class="fas fa-user-circle"></i> Account Summary</h2>
+            </div>
+            <div class="card-content">
+                <div class="account-info">
+                    <p><strong>Name:</strong> {{ user.name }}</p>
+                    <p><strong>Email:</strong> {{ user.email }}</p>
+                    <p><strong>Member Since:</strong> {{ user.created_at.strftime('%B %d, %Y') }}</p>
+                </div>
+                <div class="account-actions">
+                    <a href="#" class="btn btn-sm btn-outline">Edit Profile</a>
+                    <a href="{{ url_for('logout') }}" class="btn btn-sm btn-danger">Logout</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="dashboard-card recent-orders">
+            <div class="card-header">
+                <h2><i class="fas fa-shopping-cart"></i> Recent Orders</h2>
+                <a href="{{ url_for('orders') }}" class="view-all-link">View All</a>
+            </div>
+            <div class="card-content">
+                {% if recent_orders %}
+                    <div class="order-list">
+                        {% for order in recent_orders %}
+                            <div class="order-item">
+                                <div class="order-info">
+                                    <div class="order-id">
+                                        <span>Order #{{ order.id }}</span>
+                                        <span class="order-date">{{ order.created_at.strftime('%b %d, %Y') }}</span>
+                                    </div>
+                                    <div class="order-status">
+                                        <span class="status-badge {{ order.order_status.lower() }}">{{ order.order_status }}</span>
+                                    </div>
+                                </div>
+                                <div class="order-details">
+                                    <div class="order-products">
+                                        {% for item in order.items[:2] %}
+                                            <div class="order-product-image">
+                                                <img src="{{ item.product.image_url }}" alt="{{ item.product.name }}">
+                                            </div>
+                                        {% endfor %}
+                                        {% if order.items|length > 2 %}
+                                            <div class="order-product-more">
+                                                +{{ order.items|length - 2 }} more
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="order-total">
+                                        <span>${{ "%.2f"|format(order.total_amount) }}</span>
+                                    </div>
+                                    <div class="order-actions">
+                                        <a href="{{ url_for('order_detail', order_id=order.id) }}" class="btn btn-sm btn-outline">View Details</a>
+                                        {% if order.order_status == 'Pending' %}
+                                            <form action="{{ url_for('cancel_order', order_id=order.id) }}" method="POST" onsubmit="return confirm('Are you sure you want to cancel this order?');">
+                                                <button type="submit" class="btn btn-sm btn-danger">Cancel</button>
+                                            </form>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-shopping-bag fa-3x"></i>
+                        <p>You haven't placed any orders yet.</p>
+                        <a href="{{ url_for('products') }}" class="btn btn-primary">Start Shopping</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="dashboard-card recommended">
+            <div class="card-header">
+                <h2><i class="fas fa-thumbs-up"></i> Recommended For You</h2>
+            </div>
+            <div class="card-content">
+                <div class="product-grid-small">
+                    {% for product in recommended_products %}
+                        <div class="product-card-small">
+                            <div class="product-image">
+                                <img src="{{ product.image_url }}" alt="{{ product.name }}">
+                            </div>
+                            <div class="product-info">
+                                <h3>{{ product.name }}</h3>
+                                <p class="product-price">${{ "%.2f"|format(product.price) }}</p>
+                                <div class="product-actions">
+                                    <a href="{{ url_for('product_detail', product_id=product.id) }}" class="btn btn-sm btn-primary">View</a>
+                                    <form action="{{ url_for('add_to_cart', product_id=product.id) }}" method="POST">
+                                        <input type="hidden" name="quantity" value="1">
+                                        <button type="submit" class="btn btn-sm btn-secondary"><i class="fas fa-cart-plus"></i></button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,189 @@
+{% extends 'base.html' %}
+
+{% block title %}ShopEase - Books{% endblock %}
+
+{% block content %}
+<section class="category-header">
+    <div class="category-banner books-banner">
+        <h1>Books</h1>
+        <p>Discover our collection of bestselling books across various genres</p>
+    </div>
+    
+    <div class="category-navigation">
+        <div class="subcategory-links">
+            <a href="#novels" class="subcategory-link">Novels</a>
+            <a href="#educational" class="subcategory-link">Educational</a>
+            <a href="#selfhelp" class="subcategory-link">Self-Help</a>
+            <a href="#cooking" class="subcategory-link">Cooking</a>
+        </div>
+        <div class="filter-container">
+            <div class="filter-section">
+                <label for="sort-filter">Sort By:</label>
+                <select id="sort-filter">
+                    <option value="price-asc">Price: Low to High</option>
+                    <option value="price-desc">Price: High to Low</option>
+                    <option value="name-asc">Name: A to Z</option>
+                    <option value="name-desc">Name: Z to A</option>
+                </select>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="novels" class="subcategory-section">
+    <h2>Novels & Fiction</h2>
+    <div class="product-grid">
+        {% for product in products %}
+            {% if 'Novel' in product.name or 'Fiction' in product.name or 'Mystery' in product.name or 'Thriller' in product.name or 'Science Fiction' in product.name %}
+                <div class="product-card" data-category="{{ product.category }}" data-price="{{ product.price }}">
+                    <div class="product-image">
+                        <img src="{{ product.image_url }}" alt="{{ product.name }}">
+                    </div>
+                    <div class="product-info">
+                        <h3>{{ product.name }}</h3>
+                        <p class="product-price">${{ "%.2f"|format(product.price) }}</p>
+                        <div class="product-actions">
+                            <a href="{{ url_for('product_detail', product_id=product.id) }}" class="btn btn-primary">View Details</a>
+                            <form action="{{ url_for('add_to_cart', product_id=product.id) }}" method="POST">
+                                <input type="hidden" name="quantity" value="1">
+                                <button type="submit" class="btn btn-secondary"><i class="fas fa-cart-plus"></i></button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+</section>
+
+<section id="educational" class="subcategory-section">
+    <h2>Educational Books</h2>
+    <div class="product-grid">
+        {% for product in products %}
+            {% if 'Encyclopedia' in product.name or 'Educational' in product.name or 'History' in product.name %}
+                <div class="product-card" data-category="{{ product.category }}" data-price="{{ product.price }}">
+                    <div class="product-image">
+                        <img src="{{ product.image_url }}" alt="{{ product.name }}">
+                    </div>
+                    <div class="product-info">
+                        <h3>{{ product.name }}</h3>
+                        <p class="product-price">${{ "%.2f"|format(product.price) }}</p>
+                        <div class="product-actions">
+                            <a href="{{ url_for('product_detail', product_id=product.id) }}" class="btn btn-primary">View Details</a>
+                            <form action="{{ url_for('add_to_cart', product_id=product.id) }}" method="POST">
+                                <input type="hidden" name="quantity" value="1">
+                                <button type="submit" class="btn btn-secondary"><i class="fas fa-cart-plus"></i></button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+</section>
+
+<section id="selfhelp" class="subcategory-section">
+    <h2>Self-Help Books</h2>
+    <div class="product-grid">
+        {% for product in products %}
+            {% if 'Self-Help' in product.name or 'Business' in product.name %}
+                <div class="product-card" data-category="{{ product.category }}" data-price="{{ product.price }}">
+                    <div class="product-image">
+                        <img src="{{ product.image_url }}" alt="{{ product.name }}">
+                    </div>
+                    <div class="product-info">
+                        <h3>{{ product.name }}</h3>
+                        <p class="product-price">${{ "%.2f"|format(product.price) }}</p>
+                        <div class="product-actions">
+                            <a href="{{ url_for('product_detail', product_id=product.id) }}" class="btn btn-primary">View Details</a>
+                            <form action="{{ url_for('add_to_cart', product_id=product.id) }}" method="POST">
+                                <input type="hidden" name="quantity" value="1">
+                                <button type="submit" class="btn btn-secondary"><i class="fas fa-cart-plus"></i></button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+</section>
+
+<section id="cooking" class="subcategory-section">
+    <h2>Cooking Books</h2>
+    <div class="product-grid">
+        {% for product in products %}
+            {% if 'Cooking' in product.name or 'Recipe' in product.name or 'Food' in product.name %}
+                <div class="product-card" data-category="{{ product.category }}" data-price="{{ product.price }}">
+                    <div class="product-image">
+                        <img src="{{ product.image_url }}" alt="{{ product.name }}">
+                    </div>
+                    <div class="product-info">
+                        <h3>{{ product.name }}</h3>
+                        <p class="product-price">${{ "%.2f"|format(product.price) }}</p>
+                        <div class="product-actions">
+                            <a href="{{ url_for('product_detail', product_id=product.id) }}" class="btn btn-primary">View Details</a>
+                            <form action="{{ url_for('add_to_cart', product_id=product.id) }}" method="POST">
+                                <input type="hidden" name="quantity" value="1">
+                                <button type="submit" class="btn btn-secondary"><i class="fas fa-cart-plus"></i></button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const sortFilter = document.getElementById('sort-filter');
+        const productCards = document.querySelectorAll('.product-card');
+        
+        // Sort products
+        sortFilter.addEventListener('change', function() {
+            const sortValue = this.value;
+            const productGrids = document.querySelectorAll('.product-grid');
+            
+            productGrids.forEach(grid => {
+                const productsArray = Array.from(grid.querySelectorAll('.product-card'));
+                
+                productsArray.sort((a, b) => {
+                    if (sortValue === 'price-asc') {
+                        return parseFloat(a.dataset.price) - parseFloat(b.dataset.price);
+                    } else if (sortValue === 'price-desc') {
+                        return parseFloat(b.dataset.price) - parseFloat(a.dataset.price);
+                    } else if (sortValue === 'name-asc') {
+                        return a.querySelector('h3').textContent.localeCompare(b.querySelector('h3').textContent);
+                    } else if (sortValue === 'name-desc') {
+                        return b.querySelector('h3').textContent.localeCompare(a.querySelector('h3').textContent);
+                    }
+                });
+                
+                // Clear and re-append sorted products
+                grid.innerHTML = '';
+                productsArray.forEach(product => {
+                    grid.appendChild(product);
+                });
+            });
+        });
+        
+        // Smooth scroll for subcategory links
+        const subcategoryLinks = document.querySelectorAll('.subcategory-link');
+        
+        subcategoryLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                const targetSection = document.querySelector(targetId);
+                
+                window.scrollTo({
+                    top: targetSection.offsetTop - 100,
+                    behavior: 'smooth'
+                });
+            });
+        });
+    });
+</script>
+{% endblock %}

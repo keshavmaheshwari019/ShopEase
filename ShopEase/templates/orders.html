@@ -1,0 +1,84 @@
+[file name]: orders.html
+[file content begin]
+{% extends 'base.html' %}
+
+{% block title %}ShopEase - My Orders{% endblock %}
+
+{% block content %}
+<section class="orders-container">
+    <h1>My Orders</h1>
+    
+    {% if not orders %}
+        <div class="no-orders">
+            <p>You haven't placed any orders yet.</p>
+            <a href="{{ url_for('products') }}" class="btn btn-primary">Start Shopping</a>
+        </div>
+    {% else %}
+        <div class="orders-list">
+            {% for order in orders %}
+            <div class="order-card">
+                <div class="order-header">
+                    <div class="order-id">
+                        <h3>Order #{{ order.id }}</h3>
+                        <span class="order-date">
+                            {% if order.created_at %}
+                                {{ order.created_at.strftime('%B %d, %Y') }}
+                            {% else %}
+                                Date not available
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div class="order-status">
+                        <span class="status-badge {{ order.order_status.lower() }}">{{ order.order_status }}</span>
+                    </div>
+                </div>
+                
+                <div class="order-details">
+                    <div class="order-items-preview">
+                        {% for item in order.items[:3] %}
+                        <div class="order-item-preview">
+                            <img src="{{ item.product.image_url }}" alt="{{ item.product.name }}">
+                            {% if loop.index == 3 and loop.length > 3 %}
+                                <div class="more-items">+{{ loop.length - 3 }} more</div>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="order-summary">
+                        <div class="summary-row">
+                            <span>Items:</span>
+                            <span>{{ order.items|length }}</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Total:</span>
+                            <span>${{ "%.2f"|format(order.total_amount) }}</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Estimated Delivery:</span>
+                            <span>
+                                {% if order.estimated_delivery %}
+                                    {{ order.estimated_delivery.strftime('%B %d, %Y') }}
+                                {% else %}
+                                    Not available
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="order-actions">
+                    <a href="{{ url_for('order_detail', order_id=order.id) }}" class="btn btn-secondary">View Details</a>
+                    {% if order.order_status == 'Pending' %}
+                        <form action="{{ url_for('cancel_order', order_id=order.id) }}" method="POST" onsubmit="return confirm('Are you sure you want to cancel this order?');">
+                            <button type="submit" class="btn btn-danger">Cancel Order</button>
+                        </form>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+</section>
+{% endblock %}
+[file content end]

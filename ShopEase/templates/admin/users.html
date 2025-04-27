@@ -1,0 +1,91 @@
+{% extends 'admin/base.html' %}
+
+{% block title %}ShopEase - Admin Users{% endblock %}
+
+{% block content %}
+<div class="admin-content">
+    <h1>Users</h1>
+    
+    <div class="admin-filters">
+        <div class="search-container">
+            <input type="text" id="user-search" placeholder="Search by name or email...">
+            <button type="button"><i class="fas fa-search"></i></button>
+        </div>
+        <div class="filter-container">
+            <select id="role-filter">
+                <option value="">All Roles</option>
+                <option value="admin">Admin</option>
+                <option value="user">User</option>
+            </select>
+        </div>
+    </div>
+    
+    <div class="table-responsive">
+        <table class="admin-table" id="users-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Joined</th>
+                    <th>Orders</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                    <tr data-role="{{ 'admin' if user.is_admin else 'user' }}">
+                        <td>{{ user.id }}</td>
+                        <td>{{ user.name }}</td>
+                        <td>{{ user.email }}</td>
+                        <td>{{ 'Admin' if user.is_admin else 'User' }}</td>
+                        <td>{{ user.created_at.strftime('%B %d, %Y') }}</td>
+                        <td>{{ user.orders|length }}</td>
+                        <td>
+                            <div class="action-buttons">
+                                <a href="{{ url_for('admin_user_detail', user_id=user.id) }}" class="btn btn-sm btn-primary"><i class="fas fa-eye"></i></a>
+                                <a href="{{ url_for('admin_toggle_user', user_id=user.id) }}" class="btn btn-sm btn-warning"><i class="fas fa-toggle-on"></i></a>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('user-search');
+        const roleFilter = document.getElementById('role-filter');
+        const tableRows = document.querySelectorAll('#users-table tbody tr');
+        
+        // Search functionality
+        searchInput.addEventListener('input', filterUsers);
+        roleFilter.addEventListener('change', filterUsers);
+        
+        function filterUsers() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const roleValue = roleFilter.value;
+            
+            tableRows.forEach(row => {
+                const name = row.cells[1].textContent.toLowerCase();
+                const email = row.cells[2].textContent.toLowerCase();
+                const role = row.getAttribute('data-role');
+                
+                const matchesSearch = name.includes(searchTerm) || email.includes(searchTerm);
+                const matchesRole = !roleValue || role === roleValue;
+                
+                if (matchesSearch && matchesRole) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

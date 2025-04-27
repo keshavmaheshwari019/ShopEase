@@ -1,0 +1,284 @@
+{% extends 'admin/base.html' %}
+
+{% block title %}ShopEase - Admin Dashboard{% endblock %}
+
+{% block content %}
+<section class="dashboard-header">
+    <h1>Dashboard</h1>
+    <div class="date-filter">
+        <select id="date-range">
+            <option value="today">Today</option>
+            <option value="yesterday">Yesterday</option>
+            <option value="week" selected>This Week</option>
+            <option value="month">This Month</option>
+            <option value="year">This Year</option>
+        </select>
+    </div>
+</section>
+
+<section class="dashboard-stats">
+    <div class="stat-card">
+        <div class="stat-icon">
+            <i class="fas fa-users"></i>
+        </div>
+        <div class="stat-info">
+            <h3>Total Users</h3>
+            <p class="stat-value">{{ total_users }}</p>
+            <p class="stat-change positive">+5.2% <span>vs last period</span></p>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon">
+            <i class="fas fa-box"></i>
+        </div>
+        <div class="stat-info">
+            <h3>Total Products</h3>
+            <p class="stat-value">{{ total_products }}</p>
+            <p class="stat-change positive">+2.4% <span>vs last period</span></p>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon">
+            <i class="fas fa-shopping-cart"></i>
+        </div>
+        <div class="stat-info">
+            <h3>Total Orders</h3>
+            <p class="stat-value">{{ total_orders }}</p>
+            <p class="stat-change positive">+12.5% <span>vs last period</span></p>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon">
+            <i class="fas fa-dollar-sign"></i>
+        </div>
+        <div class="stat-info">
+            <h3>Revenue</h3>
+            <p class="stat-value">$1,234.56</p>
+            <p class="stat-change positive">+8.3% <span>vs last period</span></p>
+        </div>
+    </div>
+</section>
+
+<section class="dashboard-carousel">
+    <div class="carousel-header">
+        <h2>Product Categories</h2>
+        <div class="carousel-controls">
+            <button class="carousel-prev"><i class="fas fa-chevron-left"></i></button>
+            <button class="carousel-next"><i class="fas fa-chevron-right"></i></button>
+        </div>
+    </div>
+    
+    <div class="carousel-container">
+        <div class="category-card">
+            <div class="category-header">
+                <h3>Electronics</h3>
+                <p>Up to 40% off</p>
+            </div>
+            <div class="category-items">
+                <div class="category-item">
+                    <img src="{{ url_for('static', filename='images/products/smartphone.jpg') }}" alt="Smartphone">
+                    <p>Smartphones</p>
+                </div>
+                <div class="category-item">
+                    <img src="{{ url_for('static', filename='images/products/laptop.jpg') }}" alt="Laptop">
+                    <p>Laptops</p>
+                </div>
+                <div class="category-item">
+                    <img src="{{ url_for('static', filename='images/products/headphones.jpg') }}" alt="Headphones">
+                    <p>Headphones</p>
+                </div>
+            </div>
+            <a href="{{ url_for('admin_products', category='Electronics') }}" class="category-link">See all</a>
+        </div>
+        
+        <div class="category-card">
+            <div class="category-header">
+                <h3>Clothing</h3>
+                <p>Up to 50% off</p>
+            </div>
+            <div class="category-items">
+                <div class="category-item">
+                    <img src="{{ url_for('static', filename='images/products/mens_shirt.jpg') }}" alt="Men's Shirt">
+                    <p>Men's Wear</p>
+                </div>
+                <div class="category-item">
+                    <img src="{{ url_for('static', filename='images/products/womens_dress.jpg') }}" alt="Women's Dress">
+                    <p>Women's Wear</p>
+                </div>
+                <div class="category-item">
+                    <img src="{{ url_for('static', filename='images/products/accessories.jpg') }}" alt="Accessories">
+                    <p>Accessories</p>
+                </div>
+            </div>
+            <a href="{{ url_for('admin_products', category='Clothing') }}" class="category-link">See all</a>
+        </div>
+        
+        <div class="category-card">
+            <div class="category-header">
+                <h3>Home & Kitchen</h3>
+                <p>Starting at $19.99</p>
+            </div>
+            <div class="category-items">
+                <div class="category-item">
+                    <img src="{{ url_for('static', filename='images/products/coffee_table.jpg') }}" alt="Furniture">
+                    <p>Furniture</p>
+                </div>
+                <div class="category-item">
+                    <img src="{{ url_for('static', filename='images/products/lamp.jpg') }}" alt="Lighting">
+                    <p>Lighting</p>
+                </div>
+                <div class="category-item">
+                    <img src="{{ url_for('static', filename='images/products/kitchenware.jpg') }}" alt="Kitchenware">
+                    <p>Kitchenware</p>
+                </div>
+            </div>
+            <a href="{{ url_for('admin_products', category='Home') }}" class="category-link">See all</a>
+        </div>
+        
+        <div class="category-card">
+            <div class="category-header">
+                <h3>Books & Media</h3>
+                <p>Buy 2 Get 1 Free</p>
+            </div>
+            <div class="category-items">
+                <div class="category-item">
+                    <img src="{{ url_for('static', filename='images/products/novel.jpg') }}" alt="Books">
+                    <p>Books</p>
+                </div>
+                <div class="category-item">
+                    <img src="{{ url_for('static', filename='images/products/ebook.jpg') }}" alt="E-Books">
+                    <p>E-Books</p>
+                </div>
+                <div class="category-item">
+                    <img src="{{ url_for('static', filename='images/products/audiobook.jpg') }}" alt="Audiobooks">
+                    <p>Audiobooks</p>
+                </div>
+            </div>
+            <a href="{{ url_for('admin_products', category='Books') }}" class="category-link">See all</a>
+        </div>
+    </div>
+</section>
+
+<section class="dashboard-charts">
+    <div class="chart-container">
+        <h3>Sales Overview</h3>
+        <canvas id="salesChart"></canvas>
+    </div>
+    <div class="chart-container">
+        <h3>Top Categories</h3>
+        <canvas id="categoriesChart"></canvas>
+    </div>
+</section>
+
+<section class="recent-orders">
+    <div class="section-header">
+        <h3>Recent Orders</h3>
+        <a href="{{ url_for('admin_orders') }}" class="btn btn-secondary btn-sm">View All</a>
+    </div>
+    <div class="table-responsive">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Customer</th>
+                    <th>Date</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in recent_orders %}
+                    <tr>
+                        <td>#{{ order.id }}</td>
+                        <td>{{ order.customer.name }}</td>
+                        <td>{{ order.created_at.strftime('%B %d, %Y') }}</td>
+                        <td>${{ "%.2f"|format(order.total_amount) }}</td>
+                        <td><span class="status-badge {{ order.order_status.lower() }}">{{ order.order_status }}</span></td>
+                        <td>
+                            <a href="{{ url_for('admin_order_detail', order_id=order.id) }}" class="btn btn-sm btn-primary">View</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Sales Chart
+        const salesCtx = document.getElementById('salesChart').getContext('2d');
+        const salesChart = new Chart(salesCtx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                datasets: [{
+                    label: 'Sales',
+                    data: [650, 590, 800, 810, 960, 1200],
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 2,
+                    tension: 0.3
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+        
+        // Categories Chart
+        const categoriesCtx = document.getElementById('categoriesChart').getContext('2d');
+        const categoriesChart = new Chart(categoriesCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Electronics', 'Clothing', 'Home', 'Books'],
+                datasets: [{
+                    data: [40, 25, 20, 15],
+                    backgroundColor: [
+                        'rgba(54, 162, 235, 0.7)',
+                        'rgba(255, 99, 132, 0.7)',
+                        'rgba(255, 206, 86, 0.7)',
+                        'rgba(75, 192, 192, 0.7)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true
+            }
+        });
+
+        // Carousel Navigation
+        const carouselContainer = document.querySelector('.carousel-container');
+        const prevBtn = document.querySelector('.carousel-prev');
+        const nextBtn = document.querySelector('.carousel-next');
+        const cardWidth = document.querySelector('.category-card').offsetWidth + 20; // card width + margin
+        
+        prevBtn.addEventListener('click', () => {
+            carouselContainer.scrollBy({ left: -cardWidth, behavior: 'smooth' });
+        });
+        
+        nextBtn.addEventListener('click', () => {
+            carouselContainer.scrollBy({ left: cardWidth, behavior: 'smooth' });
+        });
+
+        // Toggle sidebar
+        const sidebarToggle = document.getElementById('sidebar-toggle');
+        const adminSidebar = document.getElementById('admin-sidebar');
+        
+        sidebarToggle.addEventListener('click', () => {
+            adminSidebar.classList.toggle('collapsed');
+            document.querySelector('.admin-main').classList.toggle('expanded');
+        });
+    });
+</script>
+{% endblock %}

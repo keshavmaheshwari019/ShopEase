@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+
+{% block title %}ShopEase - My Favorites{% endblock %}
+
+{% block styles %}
+<style>
+    .favorites-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem 15px;
+    }
+    
+    .favorites-header {
+        margin-bottom: 2rem;
+    }
+    
+    .favorites-header h1 {
+        margin-bottom: 0.5rem;
+    }
+    
+    .favorites-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 1.5rem;
+    }
+    
+    .empty-favorites {
+        text-align: center;
+        padding: 3rem 0;
+    }
+    
+    .empty-favorites i {
+        font-size: 4rem;
+        color: #ddd;
+        margin-bottom: 1rem;
+    }
+    
+    .empty-favorites h2 {
+        margin-bottom: 1rem;
+    }
+    
+    .empty-favorites p {
+        margin-bottom: 1.5rem;
+        color: #777;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="favorites-container">
+    <div class="favorites-header">
+        <h1>My Favorites</h1>
+        <p>Items you've saved for later</p>
+    </div>
+    
+    {% if products %}
+        <div class="favorites-grid">
+            {% for product in products %}
+                <div class="product-card">
+                    {% if product.discount > 0 %}
+                        <div class="product-discount">{{ product.discount }}% OFF</div>
+                    {% endif %}
+                    
+                    <form action="{{ url_for('add_to_favorites', product_id=product.id) }}" method="POST" class="favorite-form">
+                        <button type="submit" class="product-favorite active">
+                            <i class="fas fa-heart"></i>
+                        </button>
+                    </form>
+                    
+                    <a href="{{ url_for('product_detail', product_id=product.id) }}" class="product-image">
+                        <img src="{{ product.image_url }}" alt="{{ product.name }}">
+                    </a>
+                    
+                    <div class="product-info">
+                        {% if product.brand %}
+                            <div class="product-brand">{{ product.brand }}</div>
+                        {% endif %}
+                        
+                        <h3 class="product-name">{{ product.name }}</h3>
+                        
+                        {% if product.rating > 0 %}
+                            <div class="product-rating">
+                                {{ "%.1f"|format(product.rating) }} <i class="fas fa-star"></i>
+                            </div>
+                        {% endif %}
+                        
+                        <div class="product-price">
+                            {% if product.discount > 0 %}
+                                {% set discounted_price = product.price * (1 - product.discount / 100) %}
+                                <span class="current-price">${{ "%.2f"|format(discounted_price) }}</span>
+                                <span class="original-price">${{ "%.2f"|format(product.price) }}</span>
+                                <span class="discount-percent">{{ product.discount }}% off</span>
+                            {% else %}
+                                <span class="current-price">${{ "%.2f"|format(product.price) }}</span>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="product-actions">
+                            <form action="{{ url_for('add_to_cart', product_id=product.id) }}" method="POST">
+                                <input type="hidden" name="quantity" value="1">
+                                <button type="submit" class="btn-cart">
+                                    <i class="fas fa-shopping-cart"></i> Add to Cart
+                                </button>
+                            </form>
+                            
+                            <form action="{{ url_for('buy_now', product_id=product.id) }}" method="POST">
+                                <input type="hidden" name="quantity" value="1">
+                                <button type="submit" class="btn-buy">
+                                    <i class="fas fa-bolt"></i> Buy Now
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-favorites">
+            <i class="far fa-heart"></i>
+            <h2>Your favorites list is empty</h2>
+            <p>Save items you like by clicking the heart icon on product pages.</p>
+            <a href="{{ url_for('clothing') }}" class="btn btn-primary">Explore Clothing</a>
+        </div>
+    {% endif %}
+</section>
+{% endblock %}

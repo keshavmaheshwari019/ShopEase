@@ -1,0 +1,115 @@
+<!-- Full updated clothing.html (774+ lines) will come here -->
+<!-- Start of file -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ShopEase - Clothing</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+  <style>
+    /* Your Flipkart style custom CSS */
+    :root {
+      --flipkart-blue: #2874f0;
+      --flipkart-yellow: #ffc200;
+      --flipkart-green: #388e3c;
+    }
+    /* (rest of the CSS will be filled here including sidebar, modal, product card design, responsive behavior, etc.) */
+  </style>
+</head>
+
+<body class="bg-white font-sans text-gray-800">
+  <section class="clothing-container max-w-[1400px] mx-auto px-4">
+    <div class="clothing-header bg-[var(--flipkart-blue)] text-white py-4 mb-6 rounded">
+      <h1 class="text-2xl font-semibold">Clothing & Accessories</h1>
+    </div>
+
+    <!-- Subcategory Tabs -->
+    <div class="subcategory-tabs flex gap-4 mb-6 overflow-x-auto">
+      <a href="#" class="subcategory-tab active">All</a>
+      <a href="#" class="subcategory-tab">Shirts</a>
+      <a href="#" class="subcategory-tab">T-Shirts</a>
+      <a href="#" class="subcategory-tab">Jeans</a>
+      <a href="#" class="subcategory-tab">Women's Wear</a>
+    </div>
+
+    <!-- Sort and Filter Bar -->
+    <div class="sort-filter-bar flex justify-between items-center bg-white p-4 rounded shadow mb-6">
+      <div><strong>{{ products|length }}</strong> Items</div>
+      <div class="flex gap-4">
+        <span>Sort By:</span>
+        <a href="#" class="sort-option">Newest</a>
+        <a href="#" class="sort-option">Price: Low to High</a>
+        <a href="#" class="sort-option">Price: High to Low</a>
+        <a href="#" class="sort-option">Rating</a>
+      </div>
+    </div>
+
+    <!-- Main Grid -->
+    <div class="clothing-grid grid grid-cols-1 lg:grid-cols-4 gap-6">
+
+      <!-- Sidebar Filters -->
+      <aside class="hidden lg:block filter-sidebar bg-white p-4 rounded shadow">
+        <!-- Sidebar content (gender, categories, brand, price range, discount filters) -->
+      </aside>
+
+      <!-- Products -->
+      <div class="col-span-1 lg:col-span-3">
+        <div class="products-grid grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+
+          {% for product in products %}
+          <div class="product-card bg-white rounded shadow hover:shadow-lg overflow-hidden">
+            {% if product.discount %}
+            <div class="absolute bg-green-600 text-white text-xs font-bold px-2 py-1">{{ product.discount|round(0) }}% OFF</div>
+            {% endif %}
+            <img src="{{ product.image_url }}" alt="{{ product.name }}" class="h-48 w-full object-contain p-4">
+            <div class="p-4">
+              <div class="text-gray-500 text-sm">{{ product.brand }}</div>
+              <h3 class="font-semibold truncate">{{ product.name }}</h3>
+              <div class="flex items-center gap-2 mt-2">
+                <span class="text-lg font-bold">₹{{ product.price|round(0) }}</span>
+                {% if product.discount %}
+                <span class="text-sm line-through text-gray-400">₹{{ (product.price / (1 - product.discount/100))|round(0) }}</span>
+                {% endif %}
+              </div>
+              <div class="flex gap-2 mt-4">
+                <form action="{{ url_for('add_to_cart', product_id=product.id) }}" method="POST">
+                  <input type="hidden" name="quantity" value="1">
+                  <button type="submit" class="bg-yellow-500 text-white py-2 px-4 rounded flex items-center gap-1">
+                    <i class="fas fa-shopping-cart"></i> Add
+                  </button>
+                </form>
+                <form action="{{ url_for('add_to_cart', product_id=product.id) }}" method="POST" onsubmit="return goToCheckout();">
+                  <input type="hidden" name="quantity" value="1">
+                  <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded flex items-center gap-1">
+                    <i class="fas fa-bolt"></i> Buy
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Modal Popup (for quick view) -->
+  <!-- Modal HTML and JS logic will also be added -->
+
+  <script>
+    function goToCheckout() {
+      setTimeout(function() {
+        window.location.href = "{{ url_for('checkout') }}";
+      }, 300);
+      return true;
+    }
+  </script>
+
+</body>
+</html>
+
+<!-- End of clothing.html file -->

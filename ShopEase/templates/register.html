@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+
+{% block title %}ShopEase - Register{% endblock %}
+
+{% block content %}
+<section class="auth-container">
+    <div class="auth-form-container">
+        <h1>Create an Account</h1>
+        <form action="{{ url_for('register') }}" method="POST" class="auth-form">
+            <div class="form-group">
+                <label for="name">Full Name</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+                <div class="password-strength">
+                    <div class="strength-meter"></div>
+                    <p class="strength-text">Password strength: <span>Weak</span></p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="confirm_password">Confirm Password</label>
+                <input type="password" id="confirm_password" name="confirm_password" required>
+            </div>
+            <div class="form-group">
+                <div class="checkbox-container">
+                    <input type="checkbox" id="terms" name="terms" required>
+                    <label for="terms">I agree to the <a href="#">Terms and Conditions</a></label>
+                </div>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Register</button>
+            </div>
+        </form>
+        <div class="auth-links">
+            <p>Already have an account? <a href="{{ url_for('login') }}">Login</a></p>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const passwordInput = document.getElementById('password');
+        const confirmPasswordInput = document.getElementById('confirm_password');
+        const strengthMeter = document.querySelector('.strength-meter');
+        const strengthText = document.querySelector('.strength-text span');
+        
+        // Password strength checker
+        passwordInput.addEventListener('input', function() {
+            const password = this.value;
+            let strength = 0;
+            
+            if (password.length >= 8) strength += 1;
+            if (password.match(/[a-z]/) && password.match(/[A-Z]/)) strength += 1;
+            if (password.match(/\d/)) strength += 1;
+            if (password.match(/[^a-zA-Z\d]/)) strength += 1;
+            
+            switch (strength) {
+                case 0:
+                    strengthMeter.style.width = '0%';
+                    strengthMeter.style.backgroundColor = '#f00';
+                    strengthText.textContent = 'Very Weak';
+                    break;
+                case 1:
+                    strengthMeter.style.width = '25%';
+                    strengthMeter.style.backgroundColor = '#f00';
+                    strengthText.textContent = 'Weak';
+                    break;
+                case 2:
+                    strengthMeter.style.width = '50%';
+                    strengthMeter.style.backgroundColor = '#ff0';
+                    strengthText.textContent = 'Medium';
+                    break;
+                case 3:
+                    strengthMeter.style.width = '75%';
+                    strengthMeter.style.backgroundColor = '#0f0';
+                    strengthText.textContent = 'Strong';
+                    break;
+                case 4:
+                    strengthMeter.style.width = '100%';
+                    strengthMeter.style.backgroundColor = '#0f0';
+                    strengthText.textContent = 'Very Strong';
+                    break;
+            }
+        });
+        
+        // Password confirmation checker
+        confirmPasswordInput.addEventListener('input', function() {
+            if (this.value === passwordInput.value) {
+                this.setCustomValidity('');
+            } else {
+                this.setCustomValidity('Passwords do not match');
+            }
+        });
+    });
+</script>
+{% endblock %}

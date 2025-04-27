@@ -1,0 +1,141 @@
+{% extends 'admin/base.html' %}
+
+{% block title %}ShopEase - Admin Settings{% endblock %}
+
+{% block content %}
+<section class="admin-settings">
+    <div class="admin-header">
+        <h1>Settings</h1>
+    </div>
+    
+    <div class="settings-grid">
+        <div class="settings-card">
+            <h2>General Settings</h2>
+            <form class="settings-form">
+                <div class="form-group">
+                    <label for="store-name">Store Name</label>
+                    <input type="text" id="store-name" name="store_name" value="ShopEase">
+                </div>
+                <div class="form-group">
+                    <label for="store-email">Store Email</label>
+                    <input type="email" id="store-email" name="store_email" value="info@shopease.com">
+                </div>
+                <div class="form-group">
+                    <label for="store-currency">Default Currency</label>
+                    <select id="store-currency" name="store_currency">
+                        <option value="USD" selected>USD ($)</option>
+                        <option value="EUR">EUR (€)</option>
+                        <option value="GBP">GBP (£)</option>
+                        <option value="INR">INR (₹)</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+        
+        <div class="settings-card">
+            <h2>Appearance</h2>
+            <form class="settings-form">
+                <div class="form-group">
+                    <label for="theme-mode">Theme Mode</label>
+                    <select id="theme-mode" name="theme_mode">
+                        <option value="light" selected>Light</option>
+                        <option value="dark">Dark</option>
+                        <option value="system">System Default</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="primary-color">Primary Color</label>
+                    <input type="color" id="primary-color" name="primary_color" value="#4a6cf7">
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+        
+        <div class="settings-card">
+            <h2>Security</h2>
+            <form class="settings-form">
+                <div class="form-group">
+                    <label for="current-password">Current Password</label>
+                    <input type="password" id="current-password" name="current_password">
+                </div>
+                <div class="form-group">
+                    <label for="new-password">New Password</label>
+                    <input type="password" id="new-password" name="new_password">
+                </div>
+                <div class="form-group">
+                    <label for="confirm-password">Confirm New Password</label>
+                    <input type="password" id="confirm-password" name="confirm_password">
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Update Password</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+<style>
+    .admin-settings {
+        padding: 1rem 0;
+    }
+    
+    .settings-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 1.5rem;
+        margin-top: 1.5rem;
+    }
+    
+    .settings-card {
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        padding: 1.5rem;
+    }
+    
+    .settings-card h2 {
+        margin-top: 0;
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid #e1e1e1;
+    }
+    
+    .settings-form .form-group {
+        margin-bottom: 1.25rem;
+    }
+    
+    .settings-form label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+    }
+    
+    .settings-form input,
+    .settings-form select {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #e1e1e1;
+        border-radius: 4px;
+    }
+    
+    .settings-form input[type="color"] {
+        height: 40px;
+        padding: 0.25rem;
+    }
+    
+    .form-actions {
+        margin-top: 1.5rem;
+    }
+    
+    @media (max-width: 768px) {
+        .settings-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}

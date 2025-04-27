@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+
+{% block title %}ShopEase - Products{% endblock %}
+
+{% block content %}
+<section class="products-header">
+    <h1>{% if category %}{{ category }} Products{% else %}All Products{% endif %}</h1>
+    <div class="category-filters">
+        <a href="{{ url_for('products') }}" class="category-filter {% if not category %}active{% endif %}">All Categories</a>
+        <a href="{{ url_for('products', category='Electronics') }}" class="category-filter {% if category == 'Electronics' %}active{% endif %}">Electronics</a>
+        <a href="{{ url_for('products', category='Clothing') }}" class="category-filter {% if category == 'Clothing' %}active{% endif %}">Clothing</a>
+        <a href="{{ url_for('products', category='Home') }}" class="category-filter {% if category == 'Home' %}active{% endif %}">Home</a>
+        <a href="{{ url_for('products', category='Books') }}" class="category-filter {% if category == 'Books' %}active{% endif %}">Books</a>
+    </div>
+    <div class="filter-container">
+        <div class="filter-section">
+            <label for="sort-filter">Sort By:</label>
+            <select id="sort-filter">
+                <option value="price-asc">Price: Low to High</option>
+                <option value="price-desc">Price: High to Low</option>
+                <option value="name-asc">Name: A to Z</option>
+                <option value="name-desc">Name: Z to A</option>
+            </select>
+        </div>
+    </div>
+</section>
+
+<section class="products-container">
+    <div class="product-grid">
+        {% for product in products %}
+        <div class="product-card" data-category="{{ product.category }}" data-price="{{ product.price }}">
+            <div class="product-image">
+                <img src="{{ product.image_url }}" alt="{{ product.name }}">
+            </div>
+            <div class="product-info">
+                <h3>{{ product.name }}</h3>
+                <p class="product-category">{{ product.category }}</p>
+                <p class="product-price">${{ "%.2f"|format(product.price) }}</p>
+                <div class="product-actions">
+                    <a href="{{ url_for('product_detail', product_id=product.id) }}" class="btn btn-primary">View Details</a>
+                    <form action="{{ url_for('add_to_cart', product_id=product.id) }}" method="POST">
+                        <input type="hidden" name="quantity" value="1">
+                        <button type="submit" class="btn btn-secondary"><i class="fas fa-cart-plus"></i></button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    {% if not products %}
+    <div class="no-products">
+        <p>No products found. Try a different search or category.</p>
+    </div>
+    {% endif %}
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const sortFilter = document.getElementById('sort-filter');
+        const productCards = document.querySelectorAll('.product-card');
+        
+        // Sort products
+        sortFilter.addEventListener('change', function() {
+            const sortValue = this.value;
+            const productGrid = document.querySelector('.product-grid');
+            const productsArray = Array.from(productCards);
+            
+            productsArray.sort((a, b) => {
+                if (sortValue === 'price-asc') {
+                    return parseFloat(a.dataset.price) - parseFloat(b.dataset.price);
+                } else if (sortValue === 'price-desc') {
+                    return parseFloat(b.dataset.price) - parseFloat(a.dataset.price);
+                } else if (sortValue === 'name-asc') {
+                    return a.querySelector('h3').textContent.localeCompare(b.querySelector('h3').textContent);
+                } else if (sortValue === 'name-desc') {
+                    return b.querySelector('h3').textContent.localeCompare(a.querySelector('h3').textContent);
+                }
+            });
+            
+            // Clear and re-append sorted products
+            productGrid.innerHTML = '';
+            productsArray.forEach(product => {
+                productGrid.appendChild(product);
+            });
+        });
+    });
+</script>
+{% endblock %}
