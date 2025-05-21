@@ -1,0 +1,19 @@
+# render.yaml (Zero Modification Version)
+services:
+  - type: web
+    name: shopease-flask-app
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: python app.py
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: SQLALCHEMY_DATABASE_URI
+        fromDatabase:
+          name: shopease-db
+          property: connectionString
+    plan: free
+
+databases:
+  - name: shopease-db
+    plan: free
